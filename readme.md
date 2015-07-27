@@ -3,6 +3,18 @@
 This is a small wrapper to Composer class loader intended to add functionality similar to static initializers in Java.
 You can define static method named `__constructStatic()` and it'll be invoked first time class loaded into project.
 
+Example:
+
+```php
+class MyTestClass
+{
+    private static function __constructStatic()
+    {
+        //this will be called once after class loaded
+    }
+}
+```
+
 # Reqirements #
 
 No external libraries required, just use Composer autoloader in your project.
