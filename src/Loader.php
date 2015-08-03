@@ -19,6 +19,13 @@ class Loader
     private $loader;
 
     /**
+     * Parameters to pass into constructors
+     *
+     * @var array
+     */
+    private $params = [];
+
+    /**
      * Call static constructor for class if exists
      *
      * @param string $className
@@ -30,7 +37,12 @@ class Loader
             $reflectionMethod = $reflectionClass->getMethod('__constructStatic');
             if ($reflectionMethod->isStatic()) {
                 $reflectionMethod->setAccessible(true);
-                $reflectionMethod->invoke(null);
+                $reflectionParams = $reflectionMethod->getParameters();
+                if (count($reflectionParams) > 0) {
+                    $reflectionMethod->invoke(null, $this->params);
+                } else {
+                    $reflectionMethod->invoke(null);
+                }
             }
         }
     }
@@ -38,8 +50,9 @@ class Loader
     /**
      * @param ClassLoader $loader Composer loader object
      * @param bool $processLoaded Invoke static constructors on previously loaded classes
+     * @param array $params Additional parameters to pass into constructors, like DI container, etc
      */
-    public function __construct(ClassLoader $loader, $processLoaded = false)
+    public function __construct(ClassLoader $loader, $processLoaded = false, $params = [])
     {
         $this->loader = $loader;
 
