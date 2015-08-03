@@ -47,3 +47,29 @@ constructor parameter to do this:
 $composer = require_once(__DIR__ . '/vendor/autoload.php');     //get Composer loader
 $loader = new ConstructStatic\Loader($composer, true);          //wrap it and process already loaded classes   
 ```
+
+## Pass custom data to called constructors
+
+You can pass some data to called constructors - for example, inject services or pass DI container. To do this you need
+to modify constructor a bit:
+
+```php
+class MyTestClass
+{
+    //Added $params parameter
+    private static function __constructStatic($params = [])
+    {
+        //this will be called once after class loaded
+    }
+}
+```
+
+Then you can set needed data when creating wrapping loader:
+
+```php
+$composer = require_once(__DIR__ . '/vendor/autoload.php');         //get Composer loader
+$params = [
+    //...set any needed data here
+];
+$loader = new ConstructStatic\Loader($composer, false, $params);    //wrap it
+```
