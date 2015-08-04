@@ -26,6 +26,13 @@ class Loader
     private $params = [];
 
     /**
+     * Parameters to pass into constructors of specified class
+     *
+     * @var array
+     */
+    private $classParams = [];
+
+    /**
      * Call static constructor for class if exists
      *
      * @param string $className
@@ -39,7 +46,13 @@ class Loader
                 $reflectionMethod->setAccessible(true);
                 $reflectionParams = $reflectionMethod->getParameters();
                 if (count($reflectionParams) > 0) {
-                    $reflectionMethod->invoke(null, $this->params);
+                    if (isset($this->classParams[$className])) {
+                        //Pass custom specified parameters
+                        $reflectionMethod->invoke(null, $this->classParams[$className]);
+                    } else {
+                        //Pass common parameters
+                        $reflectionMethod->invoke(null, $this->params);
+                    }
                 } else {
                     $reflectionMethod->invoke(null);
                 }
@@ -49,10 +62,9 @@ class Loader
 
     /**
      * @param ClassLoader $loader Composer loader object
-     * @param bool $processLoaded Invoke static constructors on previously loaded classes
      * @param array $params Additional parameters to pass into constructors, like DI container, etc
      */
-    public function __construct(ClassLoader $loader, $processLoaded = false, $params = [])
+    public function __construct(ClassLoader $loader, $params = [])
     {
         $this->loader = $loader;
 
@@ -64,14 +76,6 @@ class Loader
 
         //register wrapper
         spl_autoload_register([$this, 'loadClass'], true, true);
-
-        if ($processLoaded) {
-            //call constructor on previously loaded classes
-            $classes = get_declared_classes();
-            foreach ($classes as $className) {
-                $this->callConstruct($className);
-            }
-        }
     }
 
     /**
@@ -100,5 +104,27 @@ class Loader
             return true;
         }
         return null;
+    }
+
+    /**
+     * Set parameters to pass into specified class instead of default ones
+     *
+     * @param string $className
+     * @param array $params
+     */
+    public function setClassParameters($className, $params)
+    {
+        $this->classParams[$className] = $params;
+    }
+
+    /**
+     * Call static constructors on previously loaded classes
+     */
+    public function processLoadedClasses()
+    {
+        $classes = get_declared_classes();
+        foreach ($classes as $className) {
+            $this->callConstruct($className);
+        }
     }
 }
