@@ -67,6 +67,7 @@ class Loader
     public function __construct(ClassLoader $loader, $params = [])
     {
         $this->loader = $loader;
+        $this->params = $params;
 
         //unregister composer
         $loaders = spl_autoload_functions();
