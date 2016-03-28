@@ -32,9 +32,11 @@ $loader = new ConstructStatic\Loader($composer);                //wrap it
 
 # Details #
 
-Note that autoloaders list is cleared on wrapping and replaced with this loader. Then all class load calls go
-through it to Composer. You can use `$loader` from the sample above as original `$composer` object - all methods calls
+Composer autoloader is unregistered and wrapped with this one. Then all class load calls go to Composer through
+this loader. You can use `$loader` from the sample above as original `$composer` object - all methods calls
 are proxied to wrapped loader.
+
+Other possible autoloaders remain registered so check resulting loaders order to prevent unexpected results.
 
 # Options #
 
