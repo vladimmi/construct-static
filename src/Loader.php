@@ -72,7 +72,10 @@ class Loader
         //unregister composer
         $loaders = spl_autoload_functions();
         foreach ($loaders as $loader) {
-            spl_autoload_unregister($loader);
+	    // we need to replace only composer
+            if(is_array($loader) && $loader[0] instanceof ClassLoader) {
+                spl_autoload_unregister($loader);
+            }
         }
 
         //register wrapper
