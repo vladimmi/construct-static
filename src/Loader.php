@@ -42,7 +42,7 @@ class Loader
         $reflectionClass = new \ReflectionClass($className);
         if ($reflectionClass->hasMethod('__constructStatic')) {
             $reflectionMethod = $reflectionClass->getMethod('__constructStatic');
-            if ($reflectionMethod->isStatic()) {
+            if ($reflectionMethod->isStatic() && $reflectionMethod->getDeclaringClass()->getName() === $className) {
                 $reflectionMethod->setAccessible(true);
                 $reflectionParams = $reflectionMethod->getParameters();
                 if (count($reflectionParams) > 0) {
